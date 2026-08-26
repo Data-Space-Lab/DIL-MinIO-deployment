@@ -53,10 +53,9 @@ Optional environment variables:
 - `NAMESPACE`, default `minio`
 - `MINIO_CLIENT_ID`, default `minio`
 - `MINIO_POLICY`, default `consoleAdmin`
-- `MINIO_BUCKET`, default `dil-data`
-- `MINIO_STORAGE_SIZE`, default `20Gi`
-- `MINIO_IMAGE`, default `quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z`
-- `MINIO_MC_IMAGE`, default `quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z`
+
+Storage size, image tags, resource limits, and the bootstrap bucket are kept in
+the Kubernetes manifests so ArgoCD can manage them declaratively.
 
 ## Manual deploy
 

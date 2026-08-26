@@ -48,6 +48,25 @@ echo "Creating/updating Keycloak client for realm ${tenant}"
 
 client_secret="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["client_secret"])' "$client_json")"
 
+echo "Ensuring namespace ${namespace} exists in tenant vCluster ${tenant}"
+vcluster connect "$tenant" -n "$host_namespace" --silent -- kubectl apply -f "${repo_root}/namespace.yaml"
+
+existing_root_json="$(
+  vcluster connect "$tenant" -n "$host_namespace" --silent -- \
+    kubectl get secret minio-root -n "$namespace" -o json 2>/dev/null || true
+)"
+if [[ -n "$existing_root_json" ]]; then
+  echo "Reusing existing minio-root secret"
+  export MINIO_ROOT_USER="$(
+    python3 -c 'import base64,json,sys; data=json.load(sys.stdin).get("data", {}); print(base64.b64decode(data.get("MINIO_ROOT_USER", "")).decode())' \
+      <<<"$existing_root_json"
+  )"
+  export MINIO_ROOT_PASSWORD="$(
+    python3 -c 'import base64,json,sys; data=json.load(sys.stdin).get("data", {}); print(base64.b64decode(data.get("MINIO_ROOT_PASSWORD", "")).decode())' \
+      <<<"$existing_root_json"
+  )"
+fi
+
 echo "Rendering Kubernetes secrets for namespace ${namespace}"
 MINIO_CLIENT_SECRET="$client_secret" "${script_dir}/render-secrets.sh" "$tenant" "$tenant_host" > "$secret_yaml"
 

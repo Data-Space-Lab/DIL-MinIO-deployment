@@ -21,6 +21,11 @@ root_password="${MINIO_ROOT_PASSWORD:-$(openssl rand -base64 30 | tr -d '\n')}"
 console_url="https://minio-console.${tenant_host}"
 api_url="https://minio-api.${tenant_host}"
 
+yaml_quote() {
+  local value="$1"
+  printf "'%s'" "${value//\'/\'\'}"
+}
+
 if [[ -z "$client_secret" ]]; then
   echo "client secret is required as the third argument or MINIO_CLIENT_SECRET" >&2
   exit 2
@@ -31,22 +36,22 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: minio-root
-  namespace: ${namespace}
+  namespace: $(yaml_quote "$namespace")
 type: Opaque
 stringData:
-  MINIO_ROOT_USER: ${root_user}
-  MINIO_ROOT_PASSWORD: ${root_password}
+  MINIO_ROOT_USER: $(yaml_quote "$root_user")
+  MINIO_ROOT_PASSWORD: $(yaml_quote "$root_password")
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: minio-oidc
-  namespace: ${namespace}
+  namespace: $(yaml_quote "$namespace")
 type: Opaque
 stringData:
-  MINIO_BROWSER_REDIRECT_URL: ${console_url}
-  MINIO_SERVER_URL: ${api_url}
-  MINIO_IDENTITY_OPENID_CLIENT_ID: ${client_id}
-  MINIO_IDENTITY_OPENID_CLIENT_SECRET: ${client_secret}
-  MINIO_IDENTITY_OPENID_CONFIG_URL: ${keycloak_base%/}/realms/${tenant}/.well-known/openid-configuration
+  MINIO_BROWSER_REDIRECT_URL: $(yaml_quote "$console_url")
+  MINIO_SERVER_URL: $(yaml_quote "$api_url")
+  MINIO_IDENTITY_OPENID_CLIENT_ID: $(yaml_quote "$client_id")
+  MINIO_IDENTITY_OPENID_CLIENT_SECRET: $(yaml_quote "$client_secret")
+  MINIO_IDENTITY_OPENID_CONFIG_URL: $(yaml_quote "${keycloak_base%/}/realms/${tenant}/.well-known/openid-configuration")
 YAML
