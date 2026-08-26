@@ -58,7 +58,7 @@ spec:
               memory: 256Mi
               ephemeral-storage: 256Mi
             limits:
-              cpu: 500m
+              cpu: 400m
               memory: 1Gi
               ephemeral-storage: 2Gi
           volumeMounts:

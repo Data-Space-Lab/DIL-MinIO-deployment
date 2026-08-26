@@ -4,6 +4,7 @@ metadata:
   name: minio-data
   namespace: minio
 spec:
+  storageClassName: longhorn-1replica
   accessModes:
     - ReadWriteOnce
   resources:
