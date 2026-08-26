@@ -1,0 +1,30 @@
+{
+  "name": "dil-minio",
+  "display_name": "DIL MinIO",
+  "description": "Tenant-scoped S3-compatible object storage with MinIO Console SSO through tenant Keycloak.",
+  "repo_url": "https://github.com/Data-Space-Lab/DIL-MinIO-deployment.git",
+  "target_revision": "HEAD",
+  "path": ".",
+  "namespace": "minio",
+  "enabled": true,
+  "routes": [
+    {
+      "route_name": "minio-console",
+      "service_name": "minio-console",
+      "service_namespace": "minio",
+      "service_port": 9001,
+      "hostname": "minio-console.{tenant_host}",
+      "path_prefix": "/",
+      "no_url_rewrite": true
+    },
+    {
+      "route_name": "minio-api",
+      "service_name": "minio",
+      "service_namespace": "minio",
+      "service_port": 9000,
+      "hostname": "minio-api.{tenant_host}",
+      "path_prefix": "/",
+      "no_url_rewrite": true
+    }
+  ]
+}

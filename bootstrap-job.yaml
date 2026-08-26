@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-bootstrap
+  namespace: minio
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              until /usr/bin/mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"; do
+                echo "waiting for MinIO"
+                sleep 2
+              done
+              /usr/bin/mc mb --ignore-existing "local/${MINIO_BOOTSTRAP_BUCKET:-dil-data}"
+          envFrom:
+            - configMapRef:
+                name: minio-config
+            - secretRef:
+                name: minio-root
