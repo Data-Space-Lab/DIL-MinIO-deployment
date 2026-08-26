@@ -13,7 +13,7 @@
       "service_name": "minio-console",
       "service_namespace": "minio",
       "service_port": 9001,
-      "hostname": "minio-console.{tenant_host}",
+      "hostname": "minio.{tenant_host}",
       "path_prefix": "/",
       "no_url_rewrite": true
     },

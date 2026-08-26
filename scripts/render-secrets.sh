@@ -18,7 +18,7 @@ client_id="${MINIO_CLIENT_ID:-minio}"
 keycloak_base="${KEYCLOAK_BASE_URL:-https://dil.collab-cloud.eu/auth}"
 root_user="${MINIO_ROOT_USER:-minioadmin}"
 root_password="${MINIO_ROOT_PASSWORD:-$(openssl rand -base64 30 | tr -d '\n')}"
-console_url="https://minio-console.${tenant_host}"
+console_url="https://minio.${tenant_host}"
 api_url="https://minio-api.${tenant_host}"
 
 yaml_quote() {

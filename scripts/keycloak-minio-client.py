@@ -40,8 +40,8 @@ def request_form(url: str, payload: dict) -> dict:
         raise RuntimeError(f"POST {url} failed with HTTP {ex.code}: {body}") from ex
 
 
-def admin_token(base_url: str, username: str, password: str) -> str:
-    token_url = f"{base_url.rstrip('/')}/realms/master/protocol/openid-connect/token"
+def admin_token(base_url: str, realm: str, username: str, password: str) -> str:
+    token_url = f"{base_url.rstrip('/')}/realms/{realm}/protocol/openid-connect/token"
     payload = {
         "username": username,
         "password": password,
@@ -139,6 +139,7 @@ def main() -> int:
     parser.add_argument("--tenant", required=True, help="Tenant realm name, for example material")
     parser.add_argument("--tenant-host", required=True, help="Tenant base host, for example material.dil.collab-cloud.eu")
     parser.add_argument("--keycloak-base-url", default=os.getenv("KEYCLOAK_BASE_URL", "https://dil.collab-cloud.eu/auth"))
+    parser.add_argument("--admin-realm", default=os.getenv("KEYCLOAK_ADMIN_REALM", "master"))
     parser.add_argument("--client-id", default=os.getenv("MINIO_CLIENT_ID", "minio"))
     parser.add_argument("--policy", default=os.getenv("MINIO_POLICY", "consoleAdmin"))
     args = parser.parse_args()
@@ -150,8 +151,8 @@ def main() -> int:
         return 2
 
     base_url = args.keycloak_base_url.rstrip("/")
-    console_url = f"https://minio-console.{args.tenant_host}"
-    token = admin_token(base_url, username, password)
+    console_url = f"https://minio.{args.tenant_host}"
+    token = admin_token(base_url, args.admin_realm, username, password)
     client_secret = ensure_client(base_url, token, args.tenant, args.client_id, console_url)
     ensure_policy_mapper(base_url, token, args.tenant, args.client_id, args.policy)
 

@@ -14,13 +14,13 @@ The stack deploys a single-node MinIO server with:
 
 Use separate public hostnames for the Console and S3 API:
 
-- Console: `https://minio-console.{tenant_host}`
+- Console: `https://minio.{tenant_host}`
 - S3 API: `https://minio-api.{tenant_host}`
 
 The Console OIDC redirect URI is:
 
 ```text
-https://minio-console.{tenant_host}/oauth_callback
+https://minio.{tenant_host}/oauth_callback
 ```
 
 ## Secrets
