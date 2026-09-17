@@ -17,6 +17,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      nodeName: dil-node4.collab-cloud.eu
       containers:
         - name: minio
           image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
