@@ -54,4 +54,5 @@ stringData:
   MINIO_IDENTITY_OPENID_CLIENT_ID: $(yaml_quote "$client_id")
   MINIO_IDENTITY_OPENID_CLIENT_SECRET: $(yaml_quote "$client_secret")
   MINIO_IDENTITY_OPENID_CONFIG_URL: $(yaml_quote "${keycloak_base%/}/realms/${tenant}/.well-known/openid-configuration")
+  MINIO_IDENTITY_OPENID_REDIRECT_URI: $(yaml_quote "${console_url}/oauth_callback")
 YAML
