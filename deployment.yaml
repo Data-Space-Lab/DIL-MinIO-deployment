@@ -22,7 +22,7 @@ spec:
       nodeName: dil-node4.collab-cloud.eu
       containers:
         - name: minio
-          image: ghcr.io/data-space-lab/minio:source-7aac2a2-20261105-ca@sha256:abba53538360a18bd231d9a79961963f400a8c9fc02e2de11df4dfcd0a8c3c30
+          image: ghcr.io/data-space-lab/minio:source-7aac2a2-20261105-oidc@sha256:45e94a683b60df9291de053bdd1a7f0b1d938876412000e11626322cb23be4d8
           imagePullPolicy: IfNotPresent
           args:
             - server
