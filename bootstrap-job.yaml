@@ -6,10 +6,12 @@ metadata:
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
       restartPolicy: OnFailure
       containers:
         - name: mc
-          image: quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z
+          image: ghcr.io/data-space-lab/mc:source-77f82e1-20261105@sha256:85710405ce34a482360010f85c2e22fe404c6c78399807e2519b60ddab7fe39a
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
