@@ -53,9 +53,17 @@ Optional environment variables:
 - `NAMESPACE`, default `minio`
 - `MINIO_CLIENT_ID`, default `minio`
 - `MINIO_POLICY`, default `consoleAdmin`
+- `GHCR_USERNAME` and `GHCR_TOKEN`, required when `ghcr-pull-secret` does not
+  already exist in the tenant cluster
 
 Storage size, image tags, resource limits, and the bootstrap bucket are kept in
 the Kubernetes manifests so ArgoCD can manage them declaratively.
+
+The server image is private in GHCR. The deployment expects a Kubernetes secret
+named `ghcr-pull-secret` in the `minio` namespace. The install script creates or
+updates it when `GHCR_USERNAME` and `GHCR_TOKEN` are provided; credentials are
+never written to this repository. For ArgoCD-only deployments, create that
+secret in the tenant cluster before syncing the application.
 
 ## Manual deploy
 

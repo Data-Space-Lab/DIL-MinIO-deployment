@@ -16,6 +16,7 @@ Optional:
   NAMESPACE=minio
   MINIO_CLIENT_ID=minio
   MINIO_POLICY=consoleAdmin
+  GHCR_USERNAME and GHCR_TOKEN, required unless ghcr-pull-secret already exists
 EOF
 }
 
@@ -69,6 +70,36 @@ client_secret="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))
 
 echo "Ensuring namespace ${namespace} exists in tenant vCluster ${tenant}"
 vcluster connect "$tenant" -n "$host_namespace" --silent -- kubectl apply -f "${repo_root}/namespace.yaml"
+
+pull_secret_name="${GHCR_PULL_SECRET_NAME:-ghcr-pull-secret}"
+if [[ -n "${GHCR_USERNAME:-}" && -n "${GHCR_TOKEN:-}" ]]; then
+  echo "Applying GHCR pull secret ${pull_secret_name}"
+  dockerconfig_json="$(GHCR_USERNAME="$GHCR_USERNAME" GHCR_TOKEN="$GHCR_TOKEN" python3 -c '
+import base64
+import json
+import os
+
+username = os.environ["GHCR_USERNAME"]
+token = os.environ["GHCR_TOKEN"]
+auth = base64.b64encode(f"{username}:{token}".encode()).decode()
+print(json.dumps({"auths": {"ghcr.io": {"username": username, "password": token, "auth": auth}}}))
+')"
+  dockerconfig_b64="$(printf '%s' "$dockerconfig_json" | base64 -w0)"
+  cat <<EOF | vcluster connect "$tenant" -n "$host_namespace" --silent -- kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${pull_secret_name}
+  namespace: ${namespace}
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: ${dockerconfig_b64}
+EOF
+elif ! vcluster connect "$tenant" -n "$host_namespace" --silent -- \
+    kubectl get secret "$pull_secret_name" -n "$namespace" >/dev/null 2>&1; then
+  echo "${pull_secret_name} is missing. Set GHCR_USERNAME and GHCR_TOKEN, or create the secret before deploying." >&2
+  exit 1
+fi
 
 existing_root_json="$(
   vcluster connect "$tenant" -n "$host_namespace" --silent -- \
