@@ -25,13 +25,20 @@ https://minio.{tenant_host}/oauth_callback
 
 ## Secrets
 
-Secrets are intentionally not committed. Generate/apply them with:
+Secrets are generated per tenant and are not committed. When MinIO is selected
+through ManagementAPI, the repository manifests under `deploy/` declare the
+required Keycloak client, policy mapper, OIDC secret, and generated root
+password. ManagementAPI renders those definitions with the tenant hostname and
+creates them before ArgoCD syncs MinIO. This is the normal deployment path.
+
+For an existing tenant that was provisioned before this bootstrap metadata was
+available, run the recovery installer once:
 
 ```bash
 ./scripts/install.sh material
 ```
 
-The script:
+The recovery script:
 
 1. Creates or updates a `minio` OIDC client in the tenant Keycloak realm.
 2. Stores the generated client secret in Kubernetes as `minio-oidc`.
