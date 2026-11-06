@@ -1,0 +1,28 @@
+clients:
+  - client_id: minio
+    secret_name: minio-oidc
+    secret_key: MINIO_IDENTITY_OPENID_CLIENT_SECRET
+    redirect_uris:
+      - https://minio.{tenant_host}/oauth_callback
+    web_origins:
+      - https://minio.{tenant_host}
+    standard_flow_enabled: true
+    direct_access_grants_enabled: false
+    service_accounts_enabled: false
+    secret_data:
+      MINIO_BROWSER_REDIRECT_URL: https://minio.{tenant_host}
+      MINIO_SERVER_URL: https://minio-api.{tenant_host}
+      MINIO_IDENTITY_OPENID_CLIENT_ID: minio
+      MINIO_IDENTITY_OPENID_CONFIG_URL: "{keycloak_base_url}/realms/{tenant}/.well-known/openid-configuration"
+      MINIO_IDENTITY_OPENID_REDIRECT_URI: https://minio.{tenant_host}/oauth_callback
+    protocol_mappers:
+      - name: minio-policy
+        protocol: openid-connect
+        protocolMapper: oidc-hardcoded-claim-mapper
+        config:
+          claim.name: policy
+          claim.value: consoleAdmin
+          jsonType.label: String
+          id.token.claim: "true"
+          access.token.claim: "true"
+          userinfo.token.claim: "true"
